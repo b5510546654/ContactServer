@@ -97,8 +97,6 @@ public class ContactResource {
 			@FormParam("name") String name,
 			@FormParam("phoneNumber") int phoneNumber) throws URISyntaxException{
 		Contact contact = contactDao.createContact(id,title,email,name,phoneNumber);
-		System.out.println(contact.getId()+" "+contact.getName());
-		System.out.println(contactDao.find(id));
 		URI uri = new URI(contact.getId()+"");
 		return Response.created(uri).build();
 	}
@@ -115,7 +113,6 @@ public class ContactResource {
 	public Response create (JAXBElement<Contact> con) throws URISyntaxException{
 		Contact contact = (Contact)con.getValue();
 		contact = contactDao.createContact(contact.getId(),contact.getTitle(),contact.getEmail(),contact.getName(),contact.getPhoneNumber());
-		System.out.println(contact.getId()+" "+contact.getName());
 		URI uri = new URI(contact.getId()+"");
 		return Response.created(uri).build();
 	}
