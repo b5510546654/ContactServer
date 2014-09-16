@@ -1,20 +1,27 @@
-package resource;
+package contact.entity;
 
-import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-
-@Entity
+/**
+ * Contact represent structure of contact XML.
+ * Each contact has difference id.
+ * @author Rungroj Maipradit 5510546654
+ */
 @XmlRootElement(name = "contact")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Contact {
+	/** Each contact has difference id.	*/
 	@XmlAttribute
 	private int id;
+	/** Contact title. */
 	private String title;
+	/** Contact name. */
 	private String name;
+	/** Contact email. */
 	private String email;
+	/** Contact number. */
 	private int phoneNumber;
 
 	public int getId() {
