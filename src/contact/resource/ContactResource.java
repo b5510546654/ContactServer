@@ -52,6 +52,8 @@ public class ContactResource {
 	@Path("{id}")
 //	@Produces(MediaType.TEXT_XML)
 	public Response get(@PathParam("id") int id){
+		if(!contactDao.containID(id))
+			return Response.status(404).build();
 		return Response.ok().type(MediaType.TEXT_XML).entity(contactDao.find(id)).build();
 	}
 
@@ -137,7 +139,7 @@ public class ContactResource {
 			@FormParam("name") String name,
 			@FormParam("phoneNumber") int phoneNumber) throws URISyntaxException{
 		if(contactDao.containID(id))
-			return Response.noContent().build();
+			return Response.status(404).build();
 		Contact contact = new Contact();
 		contact.setEmail(email);
 		contact.setName(name);
@@ -159,12 +161,12 @@ public class ContactResource {
 	@Path("{id}")
 	@Consumes({"application/xml",MediaType.TEXT_XML})
 	public Response update (@PathParam("id") int id,JAXBElement<Contact> con) throws URISyntaxException{
-		if(contactDao.containID(id))
-			return Response.noContent().build();
+		if(!contactDao.containID(id))
+			return Response.status(404).build();
 		Contact contact = (Contact)con.getValue();
 		contact.setId(id);
 		contactDao.update(contact);
-		return Response.ok(new URI(id+"")).build();
+		return Response.ok().build();
 	}
 
 	/**
@@ -175,8 +177,6 @@ public class ContactResource {
 	@DELETE
 	@Path("{id}")
 	public Response delete(@PathParam("id") int id){
-		if(contactDao.containID(id))
-			return Response.noContent().build();
 		contactDao.delete(id);
 		return Response.ok().build();
 	}

@@ -75,6 +75,16 @@ public class ContactDao {
 	 * @param contact that use for update
 	 */
 	public void update(Contact contact){
+		int id = contact.getId();
+		if(contact.getTitle() == null)
+			contact.setTitle(map.get(id).getTitle());
+		if(contact.getName() == null)
+			contact.setName(map.get(id).getName());
+		if(contact.getEmail() == null)
+			contact.setEmail(map.get(id).getEmail());
+		if(contact.getPhoneNumber() == 0)
+			contact.setPhoneNumber(map.get(id).getPhoneNumber());
+
 		map.remove(contact.getId());
 		map.put(contact.getId(), contact);
 	}
