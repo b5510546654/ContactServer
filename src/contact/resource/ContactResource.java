@@ -21,6 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
+import com.sun.research.ws.wadl.Application;
+
 import contact.entity.Contact;
 import contact.entity.ContactList;
 import contact.service.ContactDao;
@@ -48,7 +50,7 @@ public class ContactResource {
 	 */
 	@GET
 	@Path("{id}")
-	@Produces(MediaType.TEXT_XML)
+//	@Produces(MediaType.TEXT_XML)
 	public Response get(@PathParam("id") int id){
 		return Response.ok().type(MediaType.TEXT_XML).entity(contactDao.find(id)).build();
 	}
@@ -60,7 +62,7 @@ public class ContactResource {
 	 * @return response and contact
 	 */
 	@GET
-	@Produces(MediaType.TEXT_XML)
+//	@Produces(MediaType.TEXT_XML)
 	public Response getQuery(@QueryParam("q") String q){
 		System.out.println(q);
 		ContactList contactList = new ContactList();
@@ -108,7 +110,7 @@ public class ContactResource {
 	 * @throws URISyntaxException when URI is fail
 	 */
 	@POST
-	@Consumes(MediaType.TEXT_XML)
+	@Consumes({"application/xml",MediaType.TEXT_XML})
 	public Response create (JAXBElement<Contact> con) throws URISyntaxException{
 		Contact contact = (Contact)con.getValue();
 		contact = contactDao.createContact(contact.getId(),contact.getTitle(),contact.getEmail(),contact.getName(),contact.getPhoneNumber());
@@ -155,7 +157,7 @@ public class ContactResource {
 	 */
 	@PUT
 	@Path("{id}")
-	@Consumes(MediaType.TEXT_XML)
+	@Consumes({"application/xml",MediaType.TEXT_XML})
 	public Response update (@PathParam("id") int id,JAXBElement<Contact> con) throws URISyntaxException{
 		if(contactDao.containID(id))
 			return Response.noContent().build();
