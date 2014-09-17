@@ -33,8 +33,6 @@ import contact.service.ContactDao;
 @Path("/contacts")
 @Singleton
 public class ContactResource {
-//	@Context
-//	private UriInfo uriInfo;
 	/**
 	 * This object use for contact with ContactDao.
 	 */
@@ -91,6 +89,7 @@ public class ContactResource {
 	 * @throws URISyntaxException when URI is fail
 	 */
 	@POST
+	@Consumes("application/x-www-form-urlencoded")
 	public Response create (@FormParam("id") @DefaultValue("0") int id,
 			@FormParam("title") String title ,
 			@FormParam("email") String email,
@@ -129,6 +128,7 @@ public class ContactResource {
 	 */
 	@PUT
 	@Path("{id}")
+	@Consumes("application/x-www-form-urlencoded")
 	public Response update (@PathParam("id") int id,
 			@FormParam("title") String title ,
 			@FormParam("email") String email,
