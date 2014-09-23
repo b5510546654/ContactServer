@@ -54,8 +54,6 @@ public abstract class DaoFactory {
 	 * This method gives the persistence framework a chance to
 	 * gracefully save data and close databases before the
 	 * application terminates.
-	 * @throws JAXBException 
-	 * @throws FileNotFoundException 
 	 */
-	public abstract void shutdown() throws JAXBException, FileNotFoundException;
+	public abstract void shutdown();
 }

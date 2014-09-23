@@ -2,19 +2,9 @@ package contact.service.mem;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -36,28 +26,40 @@ public class MemDaoFactory extends DaoFactory {
 	/** instance of the entity DAO */
 	private ContactDao daoInstance;
 
+	/**
+	 * When initialize memDaoFactory load memory file to project.
+	 */
 	public MemDaoFactory() {
 		daoInstance = new MemContactDao();
 		loadFile();
 	}
 
 	@Override
+	/**
+	 * @see contact.service.DaoFactory#getContactDao()
+	 */
 	public ContactDao getContactDao() {
 		return daoInstance;
 	}
 
 	@Override
-	public void shutdown() throws FileNotFoundException  {
+	/**
+	 * @see contact.service.DaoFactory#shutdown()
+	 */
+	public void shutdown()  {
 		try {
 			write(daoInstance.findAll());
 		} catch (JAXBException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
-	private static void write(List<Contact> contacts) throws JAXBException, IOException{
+	/**
+	 * Use for write data from contactList to file by marshal.
+	 * @param contacts list of contact that write to file
+	 * @throws JAXBException throw error when JAXBContext,Marshaller has problem
+	 */
+	private static void write(List<Contact> contacts) throws JAXBException {
 		File file = new File("newfile2.xml");
 		System.out.println("WRITE");
 		JAXBContext jaxbContext = JAXBContext.newInstance(ContactList.class);
@@ -66,6 +68,9 @@ public class MemDaoFactory extends DaoFactory {
 		jaxbMarshaller.marshal(new ContactList(contacts), file);
 	}
 	
+	/**
+	 * Use for read file then get contact and save it to MemContactDao.
+	 */
 	public void loadFile() {
 		File infile = new File("newfile2.xml");
 		try {

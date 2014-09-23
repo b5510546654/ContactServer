@@ -11,6 +11,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
+import contact.resource.ContactResource;
 import contact.service.ContactDao;
 import contact.service.DaoFactory;
 
@@ -84,6 +85,8 @@ public class JettyMain {
 	static Server server;
 	public static void main(String[] args) throws Exception {
 		startServer(8080);
+		DaoFactory daoFactory = DaoFactory.getInstance();
+		ContactResource(daoFactory.getContactDao());
 		int ch = System.in.read();
 		stopServer();
 		System.out.println("Stopping server.");

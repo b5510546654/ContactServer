@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Contact represent structure of contact XML.
+ * Contact include title , name ,email ,phoneNumber ,photoURL
  * Each contact has difference id.
  * @author Rungroj Maipradit 5510546654
  */

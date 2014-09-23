@@ -40,10 +40,14 @@ public class ContactResource {
 	/**
 	 * This object use for contact with ContactDao.
 	 */
-	private DaoFactory daoFactory = DaoFactory.getInstance();
-	private ContactDao contactDao = daoFactory.getContactDao();
-	public ContactResource() {
-
+	private ContactDao contactDao ;
+	
+	/**
+	 * Receive contactDao via dependency injection for contract with contactDao.
+	 * @param contactDao use for contract with contactDao
+	 */
+	public ContactResource(ContactDao contactDao) {
+		this.contactDao = contactDao;
 	}
 	/**
 	 * Get path parameter from URI.
@@ -96,6 +100,7 @@ public class ContactResource {
 	 * @param email email of contact
 	 * @param name name of contact
 	 * @param phoneNumber phoneNumber of contact
+	 * @param photoURL URL of photo in this contact
 	 * @return response with set id in header
 	 * @throws URISyntaxException when URI is fail
 	 */
@@ -139,6 +144,7 @@ public class ContactResource {
 	 * @param email email of contact
 	 * @param name name of contact
 	 * @param phoneNumber phoneNumber of contact
+	 * @param photoURL URL of photo in this contact
 	 * @return response with set id in header
 	 * @throws URISyntaxException when URI is fail
 	 */
@@ -149,6 +155,7 @@ public class ContactResource {
 			@FormParam("title") String title ,
 			@FormParam("email") String email,
 			@FormParam("name") String name,
+			@FormParam("photoURL") String photoURL,
 			@FormParam("phoneNumber") int phoneNumber) throws URISyntaxException{
 		if(contactDao.containID(id))
 			return Response.status(404).build();
@@ -156,6 +163,7 @@ public class ContactResource {
 		contact.setEmail(email);
 		contact.setName(name);
 		contact.setPhoneNumber(phoneNumber);
+		contact.setPhotoUrl(photoURL);
 		contact.setId(id);
 		contactDao.update(contact);
 		return Response.ok(new URI(id+"")).build();

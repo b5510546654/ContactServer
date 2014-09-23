@@ -105,6 +105,9 @@ public class MemContactDao implements ContactDao {
 		map.put(contact.getId(), contact);
 	}
 
+	/**
+	 * @see contact.service.ContactDao#generateID(Contact)
+	 */
 	@Override
 	public void generateID(Contact contact) {
 		contact.setId(id);

@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 /**
  * ContactList has list of contact in site.
- * Use for show many contact in xml.
+ * Use for show many contact in xml then put it in file.
  * @author Rungroj Maipradit 5510546654
  */
 @XmlRootElement
