@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contactList>
     <contact id="1234">
-        <title>contact nickname or title</title>
-        <name>contact's full name</name>
-        <email>contact's email address</email>
+        <title>pass</title>
         <phoneNumber>0</phoneNumber>
     </contact>
     <contact id="12345">
