@@ -1,147 +1,81 @@
 package contact.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 
 import contact.entity.Contact;
-/**
- * Has map that contains created contact.
- * Use similar to database.
- * @author Rungroj Maipradit 5510546654
- */
-public class ContactDao {
-	/** Represent a contact every contact has different id. */
-	static int id = 1;
-	/** Contains id in key and contact in value.	 */
-	private Map<Integer, Contact> map;
-	/**
-	 * Initial map.
-	 */
-	public ContactDao() {
-		map = new HashMap<Integer, Contact>();
-	}
-	
+
+public interface ContactDao {
+
 	/**
 	 * Find contact by id
 	 * @param id key match with contact
 	 * @return contact that key match with.
 	 */
-	public Contact find(int id){
-		System.out.println(id);
-		return map.get(id);
-	}
+	public abstract Contact find(long id);
 
 	/**
 	 * Return all of contact in map.
 	 * @return all of contact in list
 	 */
-	public List<Contact> findAll(){
-		List<Contact> list = new ArrayList<Contact>();
-		for (Integer in : map.keySet()) {
-			list.add(map.get(in));
-		}
-		return list;
-	}
-	
+	public abstract List<Contact> findAll();
+
 	/**
 	 * Return list of contact that title contain str.
 	 * @param str substring of title
 	 * @return list of contact that title contain str
 	 */
-	public List<Contact> findByStr(String str){
-		List<Contact> list = new ArrayList<Contact>();
-		for (Integer in : map.keySet()) {
-			if(map.get(in).getTitle().contains(str))
-				list.add(map.get(in));
-		}
-		return list;
-	}
-	
+	public abstract List<Contact> findByStr(String str);
+
 	/**
 	 * Remove contact from map by id. 
 	 * @param id key that use for remove
+	 * @return return delete success or fail
 	 */
-	public void delete(int id){
-		map.remove(id);	
-	}
-	
+	public abstract boolean delete(long id);
+
 	/**
 	 * Update contact from id.
 	 * @param contact that use for update
+	 * @return return update success or fail
 	 */
-	public void update(Contact contact){
-		int id = contact.getId();
-		if(contact.getTitle() == null)
-			contact.setTitle(map.get(id).getTitle());
-		if(contact.getName() == null)
-			contact.setName(map.get(id).getName());
-		if(contact.getEmail() == null)
-			contact.setEmail(map.get(id).getEmail());
-		if(contact.getPhoneNumber() == 0)
-			contact.setPhoneNumber(map.get(id).getPhoneNumber());
+	public abstract boolean update(Contact contact);
 
-		map.remove(contact.getId());
-		map.put(contact.getId(), contact);
-	}
-	
 	/**
 	 * Save new contact in map.
 	 * @param contact that use to save
 	 */
-	public void save(Contact contact){
-		map.put(contact.getId(), contact);
-	}
-	
+	public abstract void save(Contact contact);
+
 	/**
 	 * Create contact with generate id and other value is null.
 	 * @return contact that created.
 	 */
-	public Contact createContact(){
-		Contact contact = new Contact();
-		contact.setId(id);
-		map.put(id, contact);
-		id++;
-		return contact;
-	}
-	
+	public abstract Contact createContact();
+
 	/**
 	 * Check map has key or not.
 	 * @param id that use to check
 	 * @return if has return true if not return false
 	 */
-	public boolean containID(int id){
-		return map.containsKey(id);
-	}
-	
+	public abstract boolean containID(long id);
+
 	/**
 	 * Create contact from parameter that given.
-	 * @param id of contact if id = 0 then use id from generateID.
+	 * @param l of contact if id = 0 then use id from generateID.
 	 * @param title of contact.
 	 * @param email of contact.
 	 * @param name of contact.
 	 * @param phoneNumber of contact.
 	 * @return contact that created.
 	 */
-	public Contact createContact(int id, String title, String email, String name,
-			int phoneNumber) {
-		Contact contact = new Contact();
-		contact.setTitle(title);
-		contact.setEmail(email);
-		contact.setName(name);
-		contact.setPhoneNumber(phoneNumber);
-		if(id != 0){
-		contact.setId(id);
-		map.put(id, contact);
-		}
-		else{
-			contact.setId(this.id);
-			map.put(this.id++, contact);
-		}
-		return contact;
-	}
+	public abstract Contact createContact(long l, String title, String email,
+			String name,String photoURL, int phoneNumber);
+	
+	
+	/**
+	 * If contact id is 0 (unassigned) generate new id for its.
+	 * @param contact generate id for this contact
+	 */
+	public abstract void generateID(Contact contact);
+
 }

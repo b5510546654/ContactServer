@@ -26,6 +26,8 @@ import com.sun.research.ws.wadl.Application;
 import contact.entity.Contact;
 import contact.entity.ContactList;
 import contact.service.ContactDao;
+import contact.service.DaoFactory;
+import contact.service.mem.MemContactDao;
 
 /**
  * Use from connect between server and contactDao.
@@ -38,7 +40,8 @@ public class ContactResource {
 	/**
 	 * This object use for contact with ContactDao.
 	 */
-	private ContactDao contactDao = new ContactDao();
+	private DaoFactory daoFactory = DaoFactory.getInstance();
+	private ContactDao contactDao = daoFactory.getContactDao();
 	public ContactResource() {
 
 	}
@@ -50,10 +53,9 @@ public class ContactResource {
 	 */
 	@GET
 	@Path("{id}")
-//	@Produces(MediaType.TEXT_XML)
 	public Response get(@PathParam("id") int id){
 		if(!contactDao.containID(id))
-			return Response.status(404).build();
+			return Response.status(204).build();
 		return Response.ok().type(MediaType.TEXT_XML).entity(contactDao.find(id)).build();
 	}
 
@@ -64,11 +66,12 @@ public class ContactResource {
 	 * @return response and contact
 	 */
 	@GET
-//	@Produces(MediaType.TEXT_XML)
-	public Response getQuery(@QueryParam("q") String q){
-		System.out.println(q);
+	public Response getQuery(@QueryParam("title") String q){
+		System.out.println("title:"+q);
 		ContactList contactList = new ContactList();
+		boolean check = false;
 		if(q == null){
+			check = true;
 			for (Contact contact : contactDao.findAll()) {
 				contactList.addContact(contact);
 			}			
@@ -76,9 +79,13 @@ public class ContactResource {
 		else{
 			for (Contact contact : contactDao.findByStr(q)) {
 				contactList.addContact(contact);
+				check = true;
 			}
 		}
-		return Response.ok().type(MediaType.TEXT_XML).entity(contactList).build();
+		if(check)
+			return Response.ok().type(MediaType.TEXT_XML).entity(contactList).build();
+		else
+			return Response.status(404).build();
 	}
 
 	/**
@@ -98,8 +105,9 @@ public class ContactResource {
 			@FormParam("title") String title ,
 			@FormParam("email") String email,
 			@FormParam("name") String name,
+			@FormParam("photoURL") String photoURL,
 			@FormParam("phoneNumber") int phoneNumber) throws URISyntaxException{
-		Contact contact = contactDao.createContact(id,title,email,name,phoneNumber);
+		Contact contact = contactDao.createContact(id,title,email,name,photoURL,phoneNumber);
 		URI uri = new URI(contact.getId()+"");
 		return Response.created(uri).build();
 	}
@@ -115,7 +123,11 @@ public class ContactResource {
 	@Consumes({"application/xml",MediaType.TEXT_XML})
 	public Response create (JAXBElement<Contact> con) throws URISyntaxException{
 		Contact contact = (Contact)con.getValue();
-		contact = contactDao.createContact(contact.getId(),contact.getTitle(),contact.getEmail(),contact.getName(),contact.getPhoneNumber());
+		System.out.println("ID"+contact.getId()+"   "+contactDao.find(contact.getId()));
+		if(contactDao.find(contact.getId()) != null){
+			return Response.status(Response.Status.CONFLICT).build();
+		}
+		contact = contactDao.createContact(contact.getId(),contact.getTitle(),contact.getEmail(),contact.getName(),contact.getPhotoUrl(),contact.getPhoneNumber());
 		URI uri = new URI(contact.getId()+"");
 		return Response.created(uri).build();
 	}
@@ -162,7 +174,7 @@ public class ContactResource {
 	@Consumes({"application/xml",MediaType.TEXT_XML})
 	public Response update (@PathParam("id") int id,JAXBElement<Contact> con) throws URISyntaxException{
 		if(!contactDao.containID(id))
-			return Response.status(404).build();
+			return Response.status(400).build();
 		Contact contact = (Contact)con.getValue();
 		contact.setId(id);
 		contactDao.update(contact);

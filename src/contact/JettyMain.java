@@ -1,3 +1,9 @@
+package contact;
+
+import java.util.EnumSet;
+import java.util.Scanner;
+
+import javax.servlet.DispatcherType;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -5,6 +11,8 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
+import contact.service.ContactDao;
+import contact.service.DaoFactory;
 
 /**
  * <p>
@@ -56,6 +64,9 @@ import org.glassfish.jersey.server.ServerProperties;
  *
  */
 public class JettyMain {
+	/** Package(s) where REST resource classes are */
+	static final String RESOURCE_PACKAGE = "contact.resource";
+	
 	/** The default port to listen on. Typically 80 or 8080.  
 	 * On Ubuntu or MacOS if you are not root then you must use a port > 1024.
 	 */
@@ -69,22 +80,39 @@ public class JettyMain {
 	 * @param args not used
 	 * @throws Exception if Jetty server encounters any problem
 	 */
+	
+	static Server server;
 	public static void main(String[] args) throws Exception {
-		int port = PORT;
-		Server server = new Server( port );
+		startServer(8080);
+		int ch = System.in.read();
+		stopServer();
+		System.out.println("Stopping server.");
+	}
+
+	public static String startServer(int i) throws Exception {
+		server = new Server(i);
 		ServletContextHandler context = new ServletContextHandler( ServletContextHandler.SESSIONS );
 		context.setContextPath("/");
 		ServletHolder holder = new ServletHolder( org.glassfish.jersey.servlet.ServletContainer.class );
-		holder.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "contact.resource");
+		holder.setInitParameter(ServerProperties.PROVIDER_PACKAGES, RESOURCE_PACKAGE);
+		holder.setInitParameter(ServerProperties.JSON_PROCESSING_FEATURE_DISABLE, "false");
 		context.addServlet( holder, "/*" );
 		server.setHandler( context );
-		System.out.println("Starting Jetty server on port " + port);
-		server.start();	
-		System.out.println("Server started.  Press ENTER to stop it.");
-		int ch = System.in.read();
-		System.out.println("Stopping server.");
+		DaoFactory dao = DaoFactory.getInstance();
+		dao.getContactDao();
+		System.out.println("Starting Jetty server on port ");
+		server.start();
+		System.out.println(server.getURI().toString());
+		return server.getURI().toString();
+	}
+
+	public static void stopServer() throws Exception {
+		DaoFactory dao = DaoFactory.getInstance();
+		dao.shutdown();
 		server.stop();
 	}
 	
+	
+	
+	
 }
-

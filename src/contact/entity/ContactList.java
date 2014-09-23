@@ -3,6 +3,9 @@ package contact.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.AccessType;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 /**
@@ -11,10 +14,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Rungroj Maipradit 5510546654
  */
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ContactList {
 	/** List of contact. */
 	@XmlElement(name="contact")
-	private List<Contact> contactlist = new ArrayList<>();
+	private List<Contact> contactList = new ArrayList<>();
 	/**
 	 * Default Constructor.
 	 */
@@ -26,7 +30,7 @@ public class ContactList {
 	 * @param contactList use for set contactList
 	 */
 	public ContactList(List<Contact> contactList){
-		this.contactlist = contactlist;
+		this.contactList = contactList;
 	}
 	
 	/**
@@ -34,6 +38,10 @@ public class ContactList {
 	 * @param contact added to contactList.
 	 */
 	public void addContact(Contact contact) {
-		contactlist.add(contact);
+		contactList.add(contact);
+	}
+	
+	public List<Contact> getContactList(){
+		return contactList;
 	}
 }

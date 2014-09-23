@@ -1,21 +1,32 @@
 package contact.entity;
 
+import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Contact represent structure of contact XML.
  * Each contact has difference id.
  * @author Rungroj Maipradit 5510546654
  */
-@XmlRootElement(name = "contact")
+@Entity
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Contact {
+public class Contact implements Serializable{
 	/** Each contact has difference id.	*/
+	@Id
 	@XmlAttribute
-	private int id;
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	private long id;
 	/** Contact title. */
+	@XmlElement(required=true)
 	private String title;
 	/** Contact name. */
 	private String name;
@@ -23,11 +34,13 @@ public class Contact {
 	private String email;
 	/** Contact number. */
 	private int phoneNumber;
-
-	public int getId() {
+	/** URL of photo */
+	private String photoUrl;
+	
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getTitle() {
@@ -54,4 +67,24 @@ public class Contact {
 	public void setPhoneNumber(int phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
+	
+	public Contact(){
+		
+	}
+	public Contact(String title, String name, String email) {
+		this.title = title;
+		this.name = name;
+		this.email = email;
+	}
+	public Contact(long id) {
+		this.id = id;
+	}
+	public String getPhotoUrl() {
+		return photoUrl;
+	}
+	public void setPhotoUrl(String photoUrl) {
+		this.photoUrl = photoUrl;
+	}
+	
+	
 }
