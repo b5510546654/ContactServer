@@ -46,7 +46,6 @@ public class JpaContactDao implements ContactDao {
 			Contact test = new Contact("Title", "Joe Experimental", "none@testing.com");
 			test.setId(id);
 			save(test);
-			//			System.out.println(test.getTitle()+" "+test.getId());
 		}
 		id++;
 		if (find(id) == null) {
@@ -65,9 +64,6 @@ public class JpaContactDao implements ContactDao {
 	public List<Contact> findAll() {
 		Query query = em.createQuery("select c from Contact c");
 		List<Contact> list = query.getResultList();
-		for(int i = 0;i<list.size();i++){
-			System.out.println(list.get(i).getTitle()+" "+list.get(i).getId());
-		}
 		return query.getResultList();
 	}
 
@@ -76,9 +72,6 @@ public class JpaContactDao implements ContactDao {
 		Query query = em.createQuery("SELECT c FROM Contact c where UPPER(c.title) like :str");
 		query.setParameter("str", "%"+str.toUpperCase()+"%");
 		List<Contact> list = query.getResultList();
-		for(int i = 0;i<list.size();i++){
-			System.out.println(list.get(i).getTitle()+" "+list.get(i).getId());
-		}
 		return query.getResultList();
 	}
 

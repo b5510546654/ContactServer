@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Tue Sep 23 18:38:02 ICT 2014:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-0148-a24d-d3d8-000005e73518 
-on database directory C:\tmp\contactdb with class loader sun.misc.Launcher$AppClassLoader@ba679e 
+Tue Sep 23 19:13:05 ICT 2014:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.11.1.1 - (1616546): instance a816c00e-0148-a26d-e994-000005e8dbf8 
+on database directory C:\tmp\contactdb with class loader sun.misc.Launcher$AppClassLoader@4de8b671 
 Loaded from file:/C:/Users/Ice/Downloads/derby.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.7.0_45-b18

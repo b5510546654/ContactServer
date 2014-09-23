@@ -13,22 +13,15 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
-
-import com.sun.research.ws.wadl.Application;
 
 import contact.entity.Contact;
 import contact.entity.ContactList;
 import contact.service.ContactDao;
 import contact.service.DaoFactory;
-import contact.service.mem.MemContactDao;
-
 /**
  * Use from connect between server and contactDao.
  * Contains method get post put delete.
@@ -40,14 +33,10 @@ public class ContactResource {
 	/**
 	 * This object use for contact with ContactDao.
 	 */
-	private ContactDao contactDao ;
+	private ContactDao contactDao = DaoFactory.getInstance().getContactDao();
 	
-	/**
-	 * Receive contactDao via dependency injection for contract with contactDao.
-	 * @param contactDao use for contract with contactDao
-	 */
-	public ContactResource(ContactDao contactDao) {
-		this.contactDao = contactDao;
+	public ContactResource() {
+		
 	}
 	/**
 	 * Get path parameter from URI.
@@ -71,7 +60,6 @@ public class ContactResource {
 	 */
 	@GET
 	public Response getQuery(@QueryParam("title") String q){
-		System.out.println("title:"+q);
 		ContactList contactList = new ContactList();
 		boolean check = false;
 		if(q == null){
@@ -128,7 +116,6 @@ public class ContactResource {
 	@Consumes({"application/xml",MediaType.TEXT_XML})
 	public Response create (JAXBElement<Contact> con) throws URISyntaxException{
 		Contact contact = (Contact)con.getValue();
-		System.out.println("ID"+contact.getId()+"   "+contactDao.find(contact.getId()));
 		if(contactDao.find(contact.getId()) != null){
 			return Response.status(Response.Status.CONFLICT).build();
 		}

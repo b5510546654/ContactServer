@@ -61,7 +61,6 @@ public class MemDaoFactory extends DaoFactory {
 	 */
 	private static void write(List<Contact> contacts) throws JAXBException {
 		File file = new File("newfile2.xml");
-		System.out.println("WRITE");
 		JAXBContext jaxbContext = JAXBContext.newInstance(ContactList.class);
 		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 		jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
