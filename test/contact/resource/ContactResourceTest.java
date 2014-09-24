@@ -1,4 +1,5 @@
-package test.contact.resource;
+package contact.resource;
+
 
 import static org.junit.Assert.*;
 

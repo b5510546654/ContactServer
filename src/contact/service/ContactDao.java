@@ -4,6 +4,11 @@ import java.util.List;
 
 import contact.entity.Contact;
 
+/**
+ * Interface of Dao use for contract with ContactResource.
+ * Can get Dao concrete class from DaoFactory.getContact();.
+ * @author Rungroj Maipradit 5510546654
+ */
 public interface ContactDao {
 
 	/**

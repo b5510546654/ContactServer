@@ -1,4 +1,4 @@
-package test.contact.service;
+package contact.service;
 
 import static org.junit.Assert.*;
 
