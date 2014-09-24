@@ -98,8 +98,6 @@ public class JettyMain {
 		holder.setInitParameter(ServerProperties.JSON_PROCESSING_FEATURE_DISABLE, "false");
 		context.addServlet( holder, "/*" );
 		server.setHandler( context );
-		DaoFactory dao = DaoFactory.getInstance();
-		dao.getContactDao();
 		System.out.println("Starting Jetty server on port ");
 		server.start();
 		System.out.println(server.getURI().toString());
