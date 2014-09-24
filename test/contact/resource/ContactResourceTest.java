@@ -46,13 +46,28 @@ import contact.JettyMain;
 import contact.entity.Contact;
 import contact.resource.ContactResource;
 
-
+/**
+ * Use for test contactResource .
+ * By start jetty and test get,put,delete,post.
+ * each test contains 2 part success and fail.
+ * @author Rungroj Maipradit 5510546654
+ */
 public class ContactResourceTest {
 	
+	/**
+	 * URL use for test
+	 */
 	private static String url;
+	/**
+	 * Client use for sent request.
+	 */
 	private static HttpClient client;
 	
 	@BeforeClass
+	/**
+	 * Start jetty and set url.
+	 * @throws Exception
+	 */
 	public static void doFirst() throws Exception{
 		url = JettyMain.startServer(8080)+"contacts/";
 		client = new HttpClient();
@@ -60,24 +75,44 @@ public class ContactResourceTest {
 	}
 
 	@AfterClass
+	/**
+	 * After finish test close client and stop server.
+	 * @throws Exception
+	 */
 	public static void doLast() throws Exception {
 		JettyMain.stopServer();
 		client.stop();
 	}
 	
 	@Test
+	/**
+	 * Test get if response ok then get work fine.
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
 	public void getPass() throws InterruptedException, ExecutionException, TimeoutException{
 		ContentResponse con = client.GET(url);
 		assertEquals(200, con.getStatus());
 	}
 	
 	@Test
+	/**
+	 * Try to request not exist id get response 204.
+	 * @throws InterruptedException
+	 * @throws ExecutionException
+	 * @throws TimeoutException
+	 */
 	public void getFail() throws InterruptedException, ExecutionException, TimeoutException{
 		ContentResponse con = client.GET(url+999999);
 		assertEquals(204, con.getStatus());
 	}
 	
 	@Test
+	/**
+	 * Create new contact and sent to server check if sent success or not and check title.
+	 * @throws Exception
+	 */
 	public void postPass() throws Exception{
 		StringContentProvider content = new StringContentProvider("<contact id=\"99999\">"
 				+"<title>pass</title></contact>");
@@ -91,6 +126,10 @@ public class ContactResourceTest {
 	}
 	
 	@Test
+	/**
+	 * Create contact and sent post to exist id it should return 409.
+	 * @throws Exception
+	 */
 	public void postFail() throws Exception{
 		StringContentProvider content = new StringContentProvider("<contact id=\"1234\">"
 				+"<title>pass</title></contact>");
@@ -98,6 +137,10 @@ public class ContactResourceTest {
 		assertEquals(409, con.getStatus());
 	}
 	@Test
+	/**
+	 * Update contact from exist id it should update and return 200.
+	 * @throws Exception
+	 */
 	public void putPass() throws Exception{
 		StringContentProvider content = new StringContentProvider("<contact id=\"1234\">"
 				+"<title>pass</title></contact>");
@@ -110,6 +153,10 @@ public class ContactResourceTest {
 	}
 	
 	@Test
+	/**
+	 * Update contact from non exist id it shouldn't update and return 400.
+	 * @throws Exception
+	 */
 	public void putFail() throws Exception{
 		StringContentProvider content = new StringContentProvider("<contact id=\"12345678\">"
 				+"<title>pass</title></contact>");
@@ -117,6 +164,10 @@ public class ContactResourceTest {
 		assertEquals(400,con.getStatus());
 	}
 	@Test
+	/**
+	 * try delete it should return 200.
+	 * @throws Exception
+	 */
 	public void deletePass() throws Exception{
 		StringContentProvider content = new StringContentProvider("<contact id=\"99999\">"
 				+"<title>pass</title></contact>");
@@ -126,6 +177,10 @@ public class ContactResourceTest {
 	}
 	
 	@Test
+	/**
+	 * try delete but wrong url it should return 405.
+	 * @throws Exception
+	 */
 	public void deleteFail() throws Exception{
 		ContentResponse con = client.newRequest(url).method(HttpMethod.DELETE).send();
 		assertEquals(405,con.getStatus());

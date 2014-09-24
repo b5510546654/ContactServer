@@ -54,7 +54,7 @@ public class MemContactDao implements ContactDao {
 	public List<Contact> findByStr(String str){
 		List<Contact> list = new ArrayList<Contact>();
 		for (Long in : map.keySet()) {
-			if(map.get(in).getTitle() != null && map.get(in).getTitle().contains(str))
+			if(map.get(in).getTitle() != null && map.get(in).getTitle().toLowerCase().contains(str.toLowerCase()))
 				list.add(map.get(in));
 		}
 		return list;
