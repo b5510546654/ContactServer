@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-
 import contact.entity.Contact;
 import contact.service.ContactDao;
 /**
@@ -80,7 +77,7 @@ public class MemContactDao implements ContactDao {
 	public boolean update(Contact contact){
 		if(!map.containsKey(contact.getId()))
 			return false;
-		long id = contact.getId();
+//		long id = contact.getId();
 //		if(contact.getTitle() == null)
 //			contact.setTitle(map.get(id).getTitle());
 //		if(contact.getName() == null)

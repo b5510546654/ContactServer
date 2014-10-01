@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <contactList>
     <contact id="1234">
-        <title>pass</title>
+        <title>title</title>
         <phoneNumber>0</phoneNumber>
+        <photoUrl>wertty</photoUrl>
     </contact>
     <contact id="12345">
         <title>title</title>
         <phoneNumber>0</phoneNumber>
+        <photoUrl>werttwey</photoUrl>
     </contact>
     <contact id="101123123313104">
         <title>title</title>

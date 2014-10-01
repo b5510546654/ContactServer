@@ -9,12 +9,17 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 
@@ -34,9 +39,10 @@ public class ContactResource {
 	 * This object use for contact with ContactDao.
 	 */
 	private ContactDao contactDao = DaoFactory.getInstance().getContactDao();
-	
+	private CacheControl cc;
 	public ContactResource() {
-		
+		cc = new CacheControl();
+		cc.setMaxAge(86400);
 	}
 	/**
 	 * Get path parameter from URI.
@@ -49,7 +55,9 @@ public class ContactResource {
 	public Response get(@PathParam("id") int id){
 		if(!contactDao.containID(id))
 			return Response.status(204).build();
-		return Response.ok().type(MediaType.TEXT_XML).entity(contactDao.find(id)).build();
+		EntityTag etag = new EntityTag(contactDao.find(id).getPhotoUrl().hashCode()+"");
+		return Response.ok(contactDao.find(id)).cacheControl(cc).tag(etag).build();
+//		return Response.ok().type(MediaType.TEXT_XML).entity(contactDao.find(id)).build();
 	}
 
 	/**
@@ -101,8 +109,10 @@ public class ContactResource {
 			@FormParam("photoURL") String photoURL,
 			@FormParam("phoneNumber") int phoneNumber) throws URISyntaxException{
 		Contact contact = contactDao.createContact(id,title,email,name,photoURL,phoneNumber);
+		EntityTag etag = new EntityTag(contact.getPhotoUrl().hashCode()+"");
 		URI uri = new URI(contact.getId()+"");
-		return Response.created(uri).build();
+		return Response.created(uri).cacheControl(cc).tag(etag).build();
+//		return Response.created(uri).build();
 	}
 
 	/**
@@ -120,8 +130,10 @@ public class ContactResource {
 			return Response.status(Response.Status.CONFLICT).build();
 		}
 		contact = contactDao.createContact(contact.getId(),contact.getTitle(),contact.getEmail(),contact.getName(),contact.getPhotoUrl(),contact.getPhoneNumber());
+		EntityTag etag = new EntityTag(contact.getPhotoUrl().hashCode()+"");
 		URI uri = new URI(contact.getId()+"");
-		return Response.created(uri).build();
+		return Response.created(uri).cacheControl(cc).tag(etag).build();
+//		return Response.created(uri).build();
 	}
 	
 	/**
@@ -143,9 +155,16 @@ public class ContactResource {
 			@FormParam("email") String email,
 			@FormParam("name") String name,
 			@FormParam("photoURL") String photoURL,
-			@FormParam("phoneNumber") int phoneNumber) throws URISyntaxException{
+			@FormParam("phoneNumber") int phoneNumber,
+			@Context Request req) throws URISyntaxException{
 		if(contactDao.containID(id))
 			return Response.status(404).build();
+		Response.ResponseBuilder rb = null;
+		EntityTag etag = new EntityTag(contactDao.find(id).getPhotoUrl().hashCode()+"");
+		rb = req.evaluatePreconditions(etag);
+		if(rb!= null){
+			return rb.cacheControl(cc).tag(etag).build();
+		}
 		Contact contact = new Contact();
 		contact.setEmail(email);
 		contact.setName(name);
@@ -167,9 +186,15 @@ public class ContactResource {
 	@PUT
 	@Path("{id}")
 	@Consumes({"application/xml",MediaType.TEXT_XML})
-	public Response update (@PathParam("id") int id,JAXBElement<Contact> con) throws URISyntaxException{
+	public Response update (@PathParam("id") int id,JAXBElement<Contact> con,@Context Request req) throws URISyntaxException{
 		if(!contactDao.containID(id))
 			return Response.status(400).build();
+		Response.ResponseBuilder rb = null;
+		EntityTag etag = new EntityTag(contactDao.find(id).getPhotoUrl().hashCode()+"");
+		rb = req.evaluatePreconditions(etag);
+		if(rb!= null){
+			return rb.cacheControl(cc).build();
+		}
 		Contact contact = (Contact)con.getValue();
 		contact.setId(id);
 		contactDao.update(contact);
@@ -183,7 +208,13 @@ public class ContactResource {
 	 */
 	@DELETE
 	@Path("{id}")
-	public Response delete(@PathParam("id") int id){
+	public Response delete(@PathParam("id") int id,@Context Request req){
+		Response.ResponseBuilder rb = null;
+		EntityTag etag = new EntityTag(contactDao.find(id).getPhotoUrl().hashCode()+"");
+		rb = req.evaluatePreconditions(etag);
+		if(rb!= null){
+			return rb.cacheControl(cc).build();
+		}
 		contactDao.delete(id);
 		return Response.ok().build();
 	}

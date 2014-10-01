@@ -1,17 +1,9 @@
 package contact;
 
-import java.util.EnumSet;
-import java.util.Scanner;
-
-import javax.servlet.DispatcherType;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
-
-import contact.service.ContactDao;
 import contact.service.DaoFactory;
 
 /**

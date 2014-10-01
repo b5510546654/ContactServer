@@ -1,11 +1,5 @@
 package contact.service;
 
-import java.io.FileNotFoundException;
-
-import javax.xml.bind.JAXBException;
-
-import contact.service.jpa.JpaDaoFactory;
-import contact.service.mem.MemContactDao;
 import contact.service.mem.MemDaoFactory;
 
 /**
