@@ -88,6 +88,10 @@ public class Contact implements Serializable{
 	public void setPhotoUrl(String photoUrl) {
 		this.photoUrl = photoUrl;
 	}
+	@Override
+	public int hashCode() {
+		return (id+title+email+phoneNumber+photoUrl).hashCode();
+	}
 	
 	
 }

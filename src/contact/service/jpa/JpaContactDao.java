@@ -58,7 +58,6 @@ public class JpaContactDao implements ContactDao {
 	@Override
 	public List<Contact> findAll() {
 		Query query = em.createQuery("select c from Contact c");
-//		List<Contact> list = query.getResultList();
 		return query.getResultList();
 	}
 
@@ -66,7 +65,6 @@ public class JpaContactDao implements ContactDao {
 	public List<Contact> findByStr(String str) {
 		Query query = em.createQuery("SELECT c FROM Contact c where UPPER(c.title) like :str");
 		query.setParameter("str", "%"+str.toUpperCase()+"%");
-//		List<Contact> list = query.getResultList();
 		return query.getResultList();
 	}
 
