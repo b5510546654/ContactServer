@@ -4,10 +4,6 @@
         <title>pass</title>
         <phoneNumber>0</phoneNumber>
     </contact>
-    <contact id="888">
-        <title>UPDATE</title>
-        <phoneNumber>0</phoneNumber>
-    </contact>
     <contact id="12345">
         <title>title</title>
         <phoneNumber>0</phoneNumber>
@@ -23,10 +19,6 @@
         <title>contact nickname or title</title>
         <name>contact's full name</name>
         <email>contact's email address</email>
-        <phoneNumber>0</phoneNumber>
-    </contact>
-    <contact id="999">
-        <title>update</title>
         <phoneNumber>0</phoneNumber>
     </contact>
     <contact id="123456">

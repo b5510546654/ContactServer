@@ -22,6 +22,13 @@ import contact.entity.Contact;
 import contact.service.ContactDao;
 import contact.service.DaoFactory;
 
+/**
+ * Test ContactResource with ETAG.
+ * GET and POST test ETAG header.
+ * PUT and DELETE test If-Match , If-None-Match.
+ * @author Rungroj Maipradit 5510546654
+ *
+ */
 public class EtagTest {
 	/**
 	 * URL use for test
@@ -34,7 +41,7 @@ public class EtagTest {
 
 	@BeforeClass
 	/**
-	 * Start jetty and set url.
+	 * Start JETTY and set URL.
 	 * @throws Exception
 	 */
 	public static void doFirst() throws Exception{
@@ -52,6 +59,8 @@ public class EtagTest {
 	 * @throws Exception
 	 */
 	public static void doLast() throws Exception {
+		DaoFactory.getInstance().getContactDao().delete(999);
+		DaoFactory.getInstance().getContactDao().delete(888);
 		JettyMain.stopServer();
 		client.stop();
 	}
@@ -77,7 +86,7 @@ public class EtagTest {
 	 * @throws ExecutionException
 	 * @throws TimeoutException
 	 */
-	public void getWithEtag2() throws InterruptedException, ExecutionException, TimeoutException{
+	public void getWithEtagNoUpdate() throws InterruptedException, ExecutionException, TimeoutException{
 		ContentResponse con = client.newRequest(url+1234).method(HttpMethod.GET).send();
 		String etag = con.getHeaders().get(HttpHeader.ETAG);
 		con = client.newRequest(url+1234).method(HttpMethod.GET).header(HttpHeader.IF_NONE_MATCH, etag).send();
@@ -126,7 +135,7 @@ public class EtagTest {
 	}
 	@Test
 	/**
-	 * Try to delete from etag but contact update.
+	 * Try to delete from ETAG but contact update.
 	 * @throws Exception
 	 */
 	public void deleteWithEtag() throws Exception{

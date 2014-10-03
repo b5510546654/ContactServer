@@ -28,7 +28,7 @@ import contact.service.ContactDao;
 import contact.service.DaoFactory;
 /**
  * Use from connect between server and contactDao.
- * Contains method get post put delete.
+ * Contains method get post put delete and support ETAG.
  * @author Rungroj Maipradit 5510546654
  */
 @Path("/contacts")
@@ -38,7 +38,11 @@ public class ContactResource {
 	 * This object use for contact with ContactDao.
 	 */
 	private ContactDao contactDao = DaoFactory.getInstance().getContactDao();
+	/** Use for control cache.*/
 	private CacheControl cc;
+	/**
+	 * set maximum size for cache.
+	 */
 	public ContactResource() {
 		cc = new CacheControl();
 		cc.setMaxAge(86400);
