@@ -96,6 +96,7 @@ public class JpaContactDao implements ContactDao {
 		tx.begin();
 		if(!containID(contact.getId()))
 			return false;
+// DAO shouldn't copy contact attributes. Use em.merge()
 		Contact contactDB = em.find(Contact.class, contact.getId());
 		//		if(contact.getTitle() != null)
 		contactDB.setTitle(contact.getTitle());
@@ -107,6 +108,7 @@ public class JpaContactDao implements ContactDao {
 		contactDB.setPhoneNumber(contact.getPhoneNumber());
 		contactDB.setPhotoUrl(contact.getPhotoUrl());
 		tx.commit();
+// no try - catch or rollback
 		return true;
 	}
 
@@ -119,6 +121,7 @@ public class JpaContactDao implements ContactDao {
 		}
 		em.persist(contact);
 		tx.commit();	
+// no try - catch or rollback
 	}
 
 	@Override

@@ -47,6 +47,7 @@ public class ContactResource {
 	@GET
 	@Path("{id}")
 	public Response get(@PathParam("id") int id){
+	//ERROR: wrong response code and bad programming. Use named constants, not numbers.
 		if(!contactDao.containID(id))
 			return Response.status(204).build();
 		return Response.ok().type(MediaType.TEXT_XML).entity(contactDao.find(id)).build();
@@ -69,6 +70,7 @@ public class ContactResource {
 			}			
 		}
 		else{
+// method should be name findByTitle
 			for (Contact contact : contactDao.findByStr(q)) {
 				contactList.addContact(contact);
 				check = true;
@@ -77,6 +79,7 @@ public class ContactResource {
 		if(check)
 			return Response.ok().type(MediaType.TEXT_XML).entity(contactList).build();
 		else
+// Use named constant Status.NOT_FOUND instead of number.
 			return Response.status(404).build();
 	}
 
@@ -100,7 +103,10 @@ public class ContactResource {
 			@FormParam("name") String name,
 			@FormParam("photoURL") String photoURL,
 			@FormParam("phoneNumber") int phoneNumber) throws URISyntaxException{
+// What is this?
+// DAO should not create new objects, except from persistent storage.
 		Contact contact = contactDao.createContact(id,title,email,name,photoURL,phoneNumber);
+//ERROR this isn't the correct URI.
 		URI uri = new URI(contact.getId()+"");
 		return Response.created(uri).build();
 	}
@@ -120,6 +126,7 @@ public class ContactResource {
 			return Response.status(Response.Status.CONFLICT).build();
 		}
 		contact = contactDao.createContact(contact.getId(),contact.getTitle(),contact.getEmail(),contact.getName(),contact.getPhotoUrl(),contact.getPhoneNumber());
+//ERROR this isn't the correct URI
 		URI uri = new URI(contact.getId()+"");
 		return Response.created(uri).build();
 	}
@@ -153,6 +160,8 @@ public class ContactResource {
 		contact.setPhotoUrl(photoURL);
 		contact.setId(id);
 		contactDao.update(contact);
+//Wrong URI again
+//Semantic error: this does *not* set the location header in the response.
 		return Response.ok(new URI(id+"")).build();
 	}
 
@@ -166,9 +175,11 @@ public class ContactResource {
 	 */
 	@PUT
 	@Path("{id}")
+// This is silly. Use MediaType.APPLICATION_XML like you did for TEXT_XML
 	@Consumes({"application/xml",MediaType.TEXT_XML})
 	public Response update (@PathParam("id") int id,JAXBElement<Contact> con) throws URISyntaxException{
 		if(!contactDao.containID(id))
+//Using numbers instead of named constants
 			return Response.status(400).build();
 		Contact contact = (Contact)con.getValue();
 		contact.setId(id);
@@ -186,5 +197,7 @@ public class ContactResource {
 	public Response delete(@PathParam("id") int id){
 		contactDao.delete(id);
 		return Response.ok().build();
+// Your Javadoc says it returns noContent if fail, but it doesn't!
+// Should return NOT_FOUND if id doesn't exist.
 	}
 }

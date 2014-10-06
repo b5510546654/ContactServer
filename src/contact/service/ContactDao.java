@@ -29,6 +29,7 @@ public interface ContactDao {
 	 * @param str substring of title
 	 * @return list of contact that title contain str
 	 */
+// This should be findByTitle
 	public abstract List<Contact> findByStr(String str);
 
 	/**
