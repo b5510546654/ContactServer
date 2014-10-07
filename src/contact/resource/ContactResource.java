@@ -6,8 +6,6 @@ import java.net.URISyntaxException;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -20,6 +18,7 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBElement;
 
 import contact.entity.Contact;
@@ -47,7 +46,7 @@ public class ContactResource {
 		cc = new CacheControl();
 		cc.setMaxAge(86400);
 	}
-	/**
+		/**
 	 * Get path parameter from URI.
 	 * Then return Contact + Response.
 	 * @param id path parameter use for search
@@ -57,7 +56,7 @@ public class ContactResource {
 	@Path("{id}")
 	public Response get(@PathParam("id") int id,@Context Request req){
 		if(!contactDao.containID(id))
-			return Response.status(204).build();
+			return Response.status(Status.NOT_FOUND).build();
 		Response.ResponseBuilder rb = null;
 		EntityTag etag = new EntityTag(contactDao.find(id).hashCode()+"");
 		rb = req.evaluatePreconditions(etag);
@@ -84,7 +83,7 @@ public class ContactResource {
 			}			
 		}
 		else{
-			for (Contact contact : contactDao.findByStr(q)) {
+			for (Contact contact : contactDao.findByTitle(q)) {
 				contactList.addContact(contact);
 				check = true;
 			}
@@ -92,50 +91,24 @@ public class ContactResource {
 		if(check)
 			return Response.ok().type(MediaType.TEXT_XML).entity(contactList).build();
 		else
-			return Response.status(404).build();
+			return Response.status(Status.NOT_FOUND).build();
 	}
 
 	/**
 	 * Use for create contact.
-	 * Receive content type application/x-www-form-urlencoded.
-	 * @param id id of contact if not set it will generate by default
-	 * @param title title of contact
-	 * @param email email of contact
-	 * @param name name of contact
-	 * @param phoneNumber phoneNumber of contact
-	 * @param photoURL URL of photo in this contact
-	 * @return response with set id in header
-	 * @throws URISyntaxException when URI is fail
-	 */
-	@POST
-	@Consumes("application/x-www-form-urlencoded")
-	public Response create (@FormParam("id") @DefaultValue("0") int id,
-			@FormParam("title") String title ,
-			@FormParam("email") String email,
-			@FormParam("name") String name,
-			@FormParam("photoURL") String photoURL,
-			@FormParam("phoneNumber") int phoneNumber) throws URISyntaxException{
-		Contact contact = contactDao.createContact(id,title,email,name,photoURL,phoneNumber);
-		URI uri = new URI(contact.getId()+"");
-		EntityTag etag = new EntityTag(contact.hashCode()+"");
-		return Response.created(uri).cacheControl(cc).tag(etag).build();
-	}
-
-	/**
-	 * Use for create contact.
-	 * Receive from text/xml
+	 * Receive from text/xml,application.xml
 	 * @param con use for get contact
 	 * @return response with new header
 	 * @throws URISyntaxException when URI is fail
 	 */
 	@POST
-	@Consumes({"application/xml",MediaType.TEXT_XML})
+	@Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
 	public Response create (JAXBElement<Contact> con) throws URISyntaxException{
 		Contact contact = (Contact)con.getValue();
 		if(contactDao.find(contact.getId()) != null){
 			return Response.status(Response.Status.CONFLICT).build();
 		}
-		contact = contactDao.createContact(contact.getId(),contact.getTitle(),contact.getEmail(),contact.getName(),contact.getPhotoUrl(),contact.getPhoneNumber());
+		contactDao.save(contact);
 		URI uri = new URI(contact.getId()+"");
 		EntityTag etag = new EntityTag(contact.hashCode()+"");
 		return Response.created(uri).cacheControl(cc).tag(etag).build();
@@ -143,46 +116,7 @@ public class ContactResource {
 
 	/**
 	 * Use for update contact if not create return noContent.
-	 * @param id use for check already create or not
-	 * @param title title of contact
-	 * @param email email of contact
-	 * @param name name of contact
-	 * @param phoneNumber phoneNumber of contact
-	 * @param photoURL URL of photo in this contact
-	 * @return response with set id in header
-	 * @throws URISyntaxException when URI is fail
-	 */
-	@PUT
-	@Path("{id}")
-	@Consumes("application/x-www-form-urlencoded")
-	public Response update (@PathParam("id") int id,
-			@FormParam("title") String title ,
-			@FormParam("email") String email,
-			@FormParam("name") String name,
-			@FormParam("photoURL") String photoURL,
-			@FormParam("phoneNumber") int phoneNumber,
-			@Context Request req) throws URISyntaxException{
-		if(contactDao.containID(id))
-			return Response.status(404).build();
-		Response.ResponseBuilder rb = null;
-		EntityTag etag = new EntityTag(contactDao.find(id).hashCode()+"");
-		rb = req.evaluatePreconditions(etag);
-		if(rb!= null){
-			return rb.cacheControl(cc).tag(etag).build();
-		}
-		Contact contact = new Contact();
-		contact.setEmail(email);
-		contact.setName(name);
-		contact.setPhoneNumber(phoneNumber);
-		contact.setPhotoUrl(photoURL);
-		contact.setId(id);
-		contactDao.update(contact);
-		return Response.ok(new URI(id+"")).build();
-	}
-
-	/**
-	 * Use for update contact if not create return noContent.
-	 * Receive from text/xml
+	 * Receive from text/xml,application/xml
 	 * @param id use for check already create or not
 	 * @param con use for get contact
 	 * @return response with new header
@@ -190,10 +124,10 @@ public class ContactResource {
 	 */
 	@PUT
 	@Path("{id}")
-	@Consumes({"application/xml",MediaType.TEXT_XML})
+	@Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
 	public Response update (@PathParam("id") int id,JAXBElement<Contact> con,@Context Request req) throws URISyntaxException{
 		if(!contactDao.containID(id))
-			return Response.status(400).build();
+			return Response.status(Status.BAD_REQUEST).build();
 		Response.ResponseBuilder rb = null;
 		EntityTag etag = new EntityTag(contactDao.find(id).hashCode()+"");
 		rb = req.evaluatePreconditions(etag);
@@ -209,7 +143,7 @@ public class ContactResource {
 	/**
 	 * delete contact from id
 	 * @param id use for delete
-	 * @return ok if delete complete noContent if fail
+	 * @return ok if delete complete not found if fail
 	 */
 	@DELETE
 	@Path("{id}")
@@ -221,8 +155,9 @@ public class ContactResource {
 			if(rb!= null){
 				return rb.cacheControl(cc).build();
 			}
+			contactDao.delete(id);
+			return Response.ok().build();
 		}
-		contactDao.delete(id);
-		return Response.ok().build();
+		return Response.status(Status.NOT_FOUND).build();
 	}
 }

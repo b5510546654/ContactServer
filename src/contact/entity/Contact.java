@@ -82,6 +82,7 @@ public class Contact implements Serializable{
 	public Contact(long id) {
 		this.id = id;
 	}
+	
 	public String getPhotoUrl() {
 		return photoUrl;
 	}

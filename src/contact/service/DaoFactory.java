@@ -1,5 +1,6 @@
 package contact.service;
 
+import contact.service.jpa.JpaDaoFactory;
 import contact.service.mem.MemDaoFactory;
 
 /**
@@ -29,8 +30,8 @@ public abstract class DaoFactory {
 	 * @return instance of a concrete DaoFactory
 	 */
 	public static DaoFactory getInstance() {
-		if(factory == null) factory = new MemDaoFactory();
-//		if (factory == null) factory = new JpaDaoFactory();
+//		if(factory == null) factory = new MemDaoFactory();
+		if (factory == null) factory = new JpaDaoFactory();
 		return factory;
 	}
 	

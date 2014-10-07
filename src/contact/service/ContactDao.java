@@ -29,7 +29,7 @@ public interface ContactDao {
 	 * @param str substring of title
 	 * @return list of contact that title contain str
 	 */
-	public abstract List<Contact> findByStr(String str);
+	public abstract List<Contact> findByTitle(String str);
 
 	/**
 	 * Remove contact from map by id. 
@@ -52,30 +52,12 @@ public interface ContactDao {
 	public abstract void save(Contact contact);
 
 	/**
-	 * Create contact with generate id and other value is null.
-	 * @return contact that created.
-	 */
-	public abstract Contact createContact();
-
-	/**
 	 * Check map has key or not.
 	 * @param id that use to check
 	 * @return if has return true if not return false
 	 */
 	public abstract boolean containID(long id);
 
-	/**
-	 * Create contact from parameter that given.
-	 * @param l of contact if id = 0 then use id from generateID.
-	 * @param title of contact.
-	 * @param email of contact.
-	 * @param name of contact.
-	 * @param phoneNumber of contact.
-	 * @return contact that created.
-	 */
-	public abstract Contact createContact(long l, String title, String email,
-			String name,String photoURL, int phoneNumber);
-	
 	
 	/**
 	 * If contact id is 0 (unassigned) generate new id for its.

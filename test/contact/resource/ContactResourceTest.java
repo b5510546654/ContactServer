@@ -8,6 +8,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -17,7 +19,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 
+
+
+
 import contact.JettyMain;
+import contact.entity.Contact;
+import contact.service.DaoFactory;
 
 /**
  * Use for test contactResource .
@@ -45,6 +52,13 @@ public class ContactResourceTest {
 		url = JettyMain.startServer(8080)+"contacts/";
 		client = new HttpClient();
 		client.start();
+
+		if(DaoFactory.getInstance().getContactDao().containID(1234)){
+			DaoFactory.getInstance().getContactDao().delete(1234);
+		}		
+		
+		Contact contact1 = new Contact(1234);
+		DaoFactory.getInstance().getContactDao().save(contact1);
 	}
 
 	@AfterClass
@@ -53,8 +67,10 @@ public class ContactResourceTest {
 	 * @throws Exception
 	 */
 	public static void doLast() throws Exception {
+		DaoFactory.getInstance().getContactDao().delete(1234);
+		
 		JettyMain.stopServer();
-		client.stop();
+		client.stop();		
 	}
 	
 	@Test
@@ -66,7 +82,7 @@ public class ContactResourceTest {
 	 */
 	public void getPass() throws InterruptedException, ExecutionException, TimeoutException{
 		ContentResponse con = client.GET(url);
-		assertEquals(200, con.getStatus());
+		assertEquals(Status.OK.getStatusCode(), con.getStatus());
 	}
 	
 	@Test
@@ -78,7 +94,7 @@ public class ContactResourceTest {
 	 */
 	public void getFail() throws InterruptedException, ExecutionException, TimeoutException{
 		ContentResponse con = client.GET(url+999999);
-		assertEquals(204, con.getStatus());
+		assertEquals(Status.NOT_FOUND.getStatusCode(), con.getStatus());
 	}
 	
 	@Test
@@ -90,7 +106,7 @@ public class ContactResourceTest {
 		StringContentProvider content = new StringContentProvider("<contact id=\"99999\">"
 				+"<title>pass</title></contact>");
 		ContentResponse con = client.newRequest(url).content(content,"application/xml").method(HttpMethod.POST).send();
-		assertEquals(201, con.getStatus());
+		assertEquals(Status.CREATED.getStatusCode(), con.getStatus());
 		String str = client.GET(url+1234).getContentAsString();
 		Pattern titlepat = Pattern.compile(".*(<title>)pass(</title>).*");
 		Matcher titlemat = titlepat.matcher(str);
@@ -107,7 +123,7 @@ public class ContactResourceTest {
 		StringContentProvider content = new StringContentProvider("<contact id=\"1234\">"
 				+"<title>pass</title></contact>");
 		ContentResponse con = client.newRequest(url).content(content,"application/xml").method(HttpMethod.POST).send();
-		assertEquals(409, con.getStatus());
+		assertEquals(Status.CONFLICT.getStatusCode(), con.getStatus());
 	}
 	@Test
 	/**
@@ -122,7 +138,7 @@ public class ContactResourceTest {
 		Pattern titlepat = Pattern.compile(".*(<title>)pass(</title>).*");
 		Matcher titlemat = titlepat.matcher(str);
 		assertTrue(titlemat.matches());
-		assertEquals(200,con.getStatus());
+		assertEquals(Status.OK.getStatusCode(),con.getStatus());
 	}
 	
 	@Test
@@ -134,7 +150,7 @@ public class ContactResourceTest {
 		StringContentProvider content = new StringContentProvider("<contact id=\"12345678\">"
 				+"<title>pass</title></contact>");
 		ContentResponse con = client.newRequest(url+12345678).content(content,"application/xml").method(HttpMethod.PUT).send();
-		assertEquals(400,con.getStatus());
+		assertEquals(Status.BAD_REQUEST.getStatusCode(),con.getStatus());
 	}
 	@Test
 	/**
@@ -146,7 +162,7 @@ public class ContactResourceTest {
 				+"<title>pass</title></contact>");
 		client.newRequest(url).content(content,"application/xml").method(HttpMethod.POST).send();
 		ContentResponse con = client.newRequest(url+99999).method(HttpMethod.DELETE).send();
-		assertEquals(200, con.getStatus());
+		assertEquals(Status.OK.getStatusCode(), con.getStatus());
 	}
 	
 	@Test
@@ -156,7 +172,7 @@ public class ContactResourceTest {
 	 */
 	public void deleteFail() throws Exception{
 		ContentResponse con = client.newRequest(url).method(HttpMethod.DELETE).send();
-		assertEquals(405,con.getStatus());
+		assertEquals(Status.METHOD_NOT_ALLOWED.getStatusCode(),con.getStatus());
 	}
 	
 }

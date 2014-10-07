@@ -33,7 +33,7 @@ public class JpaContactDao implements ContactDao {
 		createTestContact( );
 	}
 
-	
+
 	/** add contacts for testing. */
 	private void createTestContact( ) {
 		int id = 101; // usually we should let JPA set the id
@@ -62,7 +62,7 @@ public class JpaContactDao implements ContactDao {
 	}
 
 	@Override
-	public List<Contact> findByStr(String str) {
+	public List<Contact> findByTitle(String str) {
 		Query query = em.createQuery("SELECT c FROM Contact c where UPPER(c.title) like :str");
 		query.setParameter("str", "%"+str.toUpperCase()+"%");
 		return query.getResultList();
@@ -73,12 +73,9 @@ public class JpaContactDao implements ContactDao {
 		EntityTransaction tx  = em.getTransaction();
 		tx.begin();
 		Contact contact = em.find(Contact.class, id);
-		System.out.println(1);
 		if(contact == null)
 			return false;
-		System.out.println(2);
 		em.remove(contact);
-		System.out.println(3);
 		tx.commit();
 		return true;
 	}
@@ -89,16 +86,8 @@ public class JpaContactDao implements ContactDao {
 		tx.begin();
 		if(!containID(contact.getId()))
 			return false;
-		Contact contactDB = em.find(Contact.class, contact.getId());
-		//		if(contact.getTitle() != null)
-		contactDB.setTitle(contact.getTitle());
-		//		if(contact.getName() != null)
-		contactDB.setName(contact.getName());
-		//		if(contact.getEmail() != null)
-		contactDB.setEmail(contact.getEmail());
-		//		if(contact.getPhoneNumber() != 0)
-		contactDB.setPhoneNumber(contact.getPhoneNumber());
-		contactDB.setPhotoUrl(contact.getPhotoUrl());
+		em.find(Contact.class, contact.getId());
+		em.merge(contact);
 		tx.commit();
 		return true;
 	}
@@ -115,37 +104,10 @@ public class JpaContactDao implements ContactDao {
 	}
 
 	@Override
-	public Contact createContact() {
-		Contact contact = new Contact();
-		generateID(contact);
-		save(contact);
-		return contact;
-	}
-
-	@Override
 	public boolean containID(long l) {
 		Query query = em.createQuery("select c.id from Contact c where c.id = :id");
 		query.setParameter("id", l);
 		return !query.getResultList().isEmpty();
-	}
-
-	@Override
-	public Contact createContact(long id, String title, String email,
-			String name,String photoURL, int phoneNumber) {
-		Contact contact = new Contact();
-		contact.setTitle(title);
-		contact.setEmail(email);
-		contact.setName(name);
-		contact.setPhotoUrl(photoURL);
-		contact.setPhoneNumber(phoneNumber);
-		if(id != 0){
-			contact.setId(id);
-		}
-		else{
-			generateID(contact);
-		}
-		save(contact);
-		return contact;
 	}
 
 	@Override

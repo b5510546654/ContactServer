@@ -45,10 +45,10 @@ public class MemContactDao implements ContactDao {
 	}
 
 	/**
-	 * @see contact.service.ContactDao#findByStr(String)
+	 * @see contact.service.ContactDao#findByTitle(String)
 	 */
 	@Override
-	public List<Contact> findByStr(String str){
+	public List<Contact> findByTitle(String str){
 		List<Contact> list = new ArrayList<Contact>();
 		for (Long in : map.keySet()) {
 			if(map.get(in).getTitle() != null && map.get(in).getTitle().toLowerCase().contains(str.toLowerCase()))
@@ -112,15 +112,6 @@ public class MemContactDao implements ContactDao {
 
 	}
 
-	/**
-	 * @see contact.service.ContactDao#createContact()
-	 */
-	@Override
-	public Contact createContact(){
-		Contact contact = new Contact();
-		generateID(contact);
-		return contact;
-	}
 
 	/**
 	 * @see contact.service.ContactDao#containID(long)
@@ -130,25 +121,4 @@ public class MemContactDao implements ContactDao {
 		return map.containsKey(id);
 	}
 
-	/**
-	 * @see contact.service.ContactDao#createContact(long, String, String, String, String, int)
-	 */
-	@Override
-	public Contact createContact(long id, String title, String email, String name,String photoURL
-			,int phoneNumber) {
-		Contact contact = new Contact();
-		contact.setTitle(title);
-		contact.setEmail(email);
-		contact.setName(name);
-		contact.setPhotoUrl(photoURL);
-		contact.setPhoneNumber(phoneNumber);
-		if(id != 0){
-			contact.setId(id);
-			map.put(id, contact);
-		}
-		else{
-			generateID(contact);
-		}
-		return contact;
-	}
 }
