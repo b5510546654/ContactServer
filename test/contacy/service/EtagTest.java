@@ -71,7 +71,9 @@ public class EtagTest {
 			dao.delete(contact2.getId());			
 		if(dao.containID(contact3.getId()))
 			dao.delete(contact3.getId());
-		
+		if(dao.containID(99999))
+			dao.delete(99999);
+
 		dao.save(contact1);
 		dao.save(contact2);
 		dao.save(contact3);
@@ -99,7 +101,7 @@ public class EtagTest {
 	 * @throws TimeoutException
 	 */
 	public void getWithEtag() throws InterruptedException, ExecutionException, TimeoutException{
-		Contact contact = DaoFactory.getInstance().getContactDao().find(1234);
+		Contact contact = dao.find(1234);
 		ContentResponse con = client.newRequest(url+1234).method(HttpMethod.GET).send();
 		assertEquals("\""+contact.hashCode()+"\"",con.getHeaders().get(HttpHeader.ETAG));
 		assertEquals(Status.OK.getStatusCode(), con.getStatus());
@@ -124,18 +126,17 @@ public class EtagTest {
 	 * Check ETAG from post method.
 	 * @throws Exception
 	 */
-	public void postWithEtag() throws Exception{
-		if(dao.containID(99999))
-			dao.delete(99999);
-		
+	public void postWithEtag() throws Exception{		
 		StringContentProvider content = new StringContentProvider("<contact id=\"99999\">"
 				+"<title>pass</title></contact>");
 		ContentResponse con = client.newRequest(url).content(content,"application/xml").method(HttpMethod.POST).send();
 		assertEquals(Status.CREATED.getStatusCode(), con.getStatus());
+		
 		String str = client.GET(url+99999).getContentAsString();
 		Pattern titlepat = Pattern.compile(".*(<title>)pass(</title>).*");
 		Matcher titlemat = titlepat.matcher(str);
 		assertTrue(titlemat.matches());
+		
 		Contact contact = DaoFactory.getInstance().getContactDao().find(99999);
 		assertEquals("\""+contact.hashCode()+"\"", con.getHeaders().get(HttpHeader.ETAG));
 		client.newRequest(url+99999).method(HttpMethod.DELETE).send();

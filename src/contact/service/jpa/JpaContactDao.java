@@ -1,7 +1,9 @@
 package contact.service.jpa;
 
 import java.util.*;
+import java.util.logging.Logger;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
@@ -83,24 +85,35 @@ public class JpaContactDao implements ContactDao {
 	@Override
 	public boolean update(Contact contact) {
 		EntityTransaction tx  = em.getTransaction();
-		tx.begin();
-		if(!containID(contact.getId()))
+		try{
+			tx.begin();
+			if(!containID(contact.getId()))
+				return false;
+			em.find(Contact.class, contact.getId());
+			em.merge(contact);
+			tx.commit();
+			return true;
+		}catch(EntityExistsException ex){
+			Logger.getLogger(this.getClass().getName()).warning(ex.getMessage());
+			if(tx.isActive())try{ tx.rollback(); } catch (Exception e) {}
 			return false;
-		em.find(Contact.class, contact.getId());
-		em.merge(contact);
-		tx.commit();
-		return true;
+		}
 	}
 
 	@Override
 	public void save(Contact contact) {
 		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-		if(contact.getId() == 0){
-			generateID(contact);
+		try{
+			tx.begin();
+			if(contact.getId() == 0){
+				generateID(contact);
+			}
+			em.persist(contact);
+			tx.commit();	
+		}catch(EntityExistsException ex){
+			Logger.getLogger(this.getClass().getName()).warning(ex.getMessage());
+			if(tx.isActive())try{ tx.rollback(); } catch (Exception e) {}
 		}
-		em.persist(contact);
-		tx.commit();	
 	}
 
 	@Override
