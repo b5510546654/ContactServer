@@ -115,7 +115,7 @@ public class ContactResource {
 	}
 
 	/**
-	 * Use for update contact if not create return noContent.
+	 * Use for update contact if not create return not found.
 	 * Receive from text/xml,application/xml
 	 * @param id use for check already create or not
 	 * @param con use for get contact
@@ -127,7 +127,7 @@ public class ContactResource {
 	@Consumes({MediaType.APPLICATION_XML,MediaType.TEXT_XML})
 	public Response update (@PathParam("id") int id,JAXBElement<Contact> con,@Context Request req) throws URISyntaxException{
 		if(!contactDao.containID(id))
-			return Response.status(Status.BAD_REQUEST).build();
+			return Response.status(Status.NOT_FOUND).build();
 		Response.ResponseBuilder rb = null;
 		EntityTag etag = new EntityTag(contactDao.find(id).hashCode()+"");
 		rb = req.evaluatePreconditions(etag);

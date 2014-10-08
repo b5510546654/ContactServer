@@ -150,7 +150,7 @@ public class ContactResourceTest {
 		StringContentProvider content = new StringContentProvider("<contact id=\"12345678\">"
 				+"<title>pass</title></contact>");
 		ContentResponse con = client.newRequest(url+12345678).content(content,"application/xml").method(HttpMethod.PUT).send();
-		assertEquals(Status.BAD_REQUEST.getStatusCode(),con.getStatus());
+		assertEquals(Status.NOT_FOUND.getStatusCode(),con.getStatus());
 	}
 	@Test
 	/**
