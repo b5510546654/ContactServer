@@ -19,22 +19,26 @@ import contact.service.mem.MemDaoFactory;
 public abstract class DaoFactory {
 	// singleton instance of this factory
 	private static DaoFactory factory;
-	
+
 	/** this class shouldn't be instantiated, but constructor must be visible to subclasses. */
 	protected DaoFactory() {
 		// nothing to do
 	}
-	
+
 	/**
 	 * Get a singleton instance of the DaoFactory.
 	 * @return instance of a concrete DaoFactory
 	 */
 	public static DaoFactory getInstance() {
-//		if(factory == null) factory = new MemDaoFactory();
-		if (factory == null) factory = new JpaDaoFactory();
+		//if(factory == null) factory = new MemDaoFactory();
+		if (factory == null) DaoFactory.setFactory(new JpaDaoFactory());
 		return factory;
 	}
-	
+
+	public static void setFactory(DaoFactory fac) {
+		factory = fac;
+	}
+
 	/**
 	 * Get an instance of a data access object for Contact objects.
 	 * Subclasses of the base DaoFactory class must provide a concrete
@@ -43,7 +47,7 @@ public abstract class DaoFactory {
 	 * @return instance of Contact's DAO
 	 */
 	public abstract ContactDao getContactDao();
-	
+
 	/**
 	 * Shutdown all persistence services.
 	 * This method gives the persistence framework a chance to

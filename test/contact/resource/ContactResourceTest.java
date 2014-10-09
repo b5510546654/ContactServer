@@ -22,9 +22,11 @@ import org.junit.Test;
 
 
 
+
 import contact.JettyMain;
 import contact.entity.Contact;
 import contact.service.DaoFactory;
+import contact.service.mem.MemDaoFactory;
 
 /**
  * Use for test contactResource .

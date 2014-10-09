@@ -73,13 +73,17 @@ public class JpaContactDao implements ContactDao {
 	@Override
 	public boolean delete(long id) {
 		EntityTransaction tx  = em.getTransaction();
+		try{
 		tx.begin();
 		Contact contact = em.find(Contact.class, id);
-		if(contact == null)
-			return false;
 		em.remove(contact);
 		tx.commit();
 		return true;
+		}catch(EntityExistsException ex){
+			Logger.getLogger(this.getClass().getName()).warning(ex.getMessage());
+			if(tx.isActive())try{ tx.rollback(); } catch (Exception e) {}
+			return false;
+		}
 	}
 
 	@Override

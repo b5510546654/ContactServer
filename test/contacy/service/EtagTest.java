@@ -23,6 +23,7 @@ import contact.JettyMain;
 import contact.entity.Contact;
 import contact.service.ContactDao;
 import contact.service.DaoFactory;
+import contact.service.mem.MemDaoFactory;
 
 /**
  * Test ContactResource with ETAG.
@@ -46,6 +47,10 @@ public class EtagTest {
 	 */
 	private static ContactDao dao;
 
+	private static Contact contact1;
+	private static Contact contact2;
+	private static Contact contact3;
+	private static Contact contact4;
 	@BeforeClass
 	/**
 	 * Start JETTY and set URL.
@@ -56,23 +61,26 @@ public class EtagTest {
 		client = new HttpClient();
 		client.start();
 
+		//		DaoFactory.setFactory(new MemDaoFactory());
 		dao = DaoFactory.getInstance().getContactDao();
-		
-		Contact contact1 = new Contact(999);
+
+		contact1 = new Contact(999);
 		contact1.setTitle("test in put");
-		Contact contact2 = new Contact(888);
+		contact2 = new Contact(888);
 		contact2.setTitle("test in delete");
-		Contact contact3 = new Contact(1234);
-		contact2.setTitle("pass");
-		
+		contact3 = new Contact(1234);
+		contact3.setTitle("pass");
+		contact4 = new Contact(99999);
+		contact4.setTitle("pass");
+
 		if(dao.containID(contact1.getId()))
 			dao.delete(contact1.getId());
 		if(dao.containID(contact2.getId()))
 			dao.delete(contact2.getId());			
 		if(dao.containID(contact3.getId()))
 			dao.delete(contact3.getId());
-		if(dao.containID(99999))
-			dao.delete(99999);
+		if(dao.containID(contact4.getId()))
+			dao.delete(contact4.getId());
 
 		dao.save(contact1);
 		dao.save(contact2);
@@ -85,10 +93,10 @@ public class EtagTest {
 	 * @throws Exception
 	 */
 	public static void doLast() throws Exception {
-		dao.delete(999);
-		dao.delete(888);
-		dao.delete(1234);
-		
+		dao.delete(contact1.getId());
+		dao.delete(contact2.getId());
+		dao.delete(contact3.getId());
+
 		JettyMain.stopServer();
 		client.stop();
 	}
@@ -101,9 +109,8 @@ public class EtagTest {
 	 * @throws TimeoutException
 	 */
 	public void getWithEtag() throws InterruptedException, ExecutionException, TimeoutException{
-		Contact contact = dao.find(1234);
 		ContentResponse con = client.newRequest(url+1234).method(HttpMethod.GET).send();
-		assertEquals("\""+contact.hashCode()+"\"",con.getHeaders().get(HttpHeader.ETAG));
+		assertEquals("\""+contact3.hashCode()+"\"",con.getHeaders().get(HttpHeader.ETAG));
 		assertEquals(Status.OK.getStatusCode(), con.getStatus());
 	}
 
@@ -131,14 +138,13 @@ public class EtagTest {
 				+"<title>pass</title></contact>");
 		ContentResponse con = client.newRequest(url).content(content,"application/xml").method(HttpMethod.POST).send();
 		assertEquals(Status.CREATED.getStatusCode(), con.getStatus());
-		
+
 		String str = client.GET(url+99999).getContentAsString();
 		Pattern titlepat = Pattern.compile(".*(<title>)pass(</title>).*");
 		Matcher titlemat = titlepat.matcher(str);
 		assertTrue(titlemat.matches());
-		
-		Contact contact = DaoFactory.getInstance().getContactDao().find(99999);
-		assertEquals("\""+contact.hashCode()+"\"", con.getHeaders().get(HttpHeader.ETAG));
+
+		assertEquals("\""+contact4.hashCode()+"\"", con.getHeaders().get(HttpHeader.ETAG));
 		client.newRequest(url+99999).method(HttpMethod.DELETE).send();
 	}
 
@@ -171,11 +177,11 @@ public class EtagTest {
 	public void deleteWithEtag() throws Exception{
 		ContentResponse con = client.newRequest(url+888).method(HttpMethod.GET).send();
 		String etag = con.getHeaders().get(HttpHeader.ETAG);
-		
+
 		StringContentProvider content = new StringContentProvider("<contact id=\"888\">"
 				+"<title>UPDATE</title></contact>");
 		client.newRequest(url+888).content(content,"application/xml").method(HttpMethod.PUT).send();
-		
+
 		con = client.newRequest(url+888).header(HttpHeader.IF_MATCH, etag).method(HttpMethod.DELETE).send();
 		assertEquals(Status.PRECONDITION_FAILED.getStatusCode(), con.getStatus());
 	}
