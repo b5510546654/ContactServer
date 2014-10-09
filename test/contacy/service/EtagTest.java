@@ -61,7 +61,7 @@ public class EtagTest {
 		client = new HttpClient();
 		client.start();
 
-		//		DaoFactory.setFactory(new MemDaoFactory());
+//				DaoFactory.setFactory(new MemDaoFactory());
 		dao = DaoFactory.getInstance().getContactDao();
 
 		contact1 = new Contact(999);

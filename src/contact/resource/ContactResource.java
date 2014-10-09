@@ -18,6 +18,7 @@ import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBElement;
 
@@ -39,6 +40,8 @@ public class ContactResource {
 	private ContactDao contactDao = DaoFactory.getInstance().getContactDao();
 	/** Use for control cache.*/
 	private CacheControl cc;
+	@Context
+	private UriInfo uriinfo;
 	/**
 	 * set maximum size for cache.
 	 */
@@ -109,9 +112,8 @@ public class ContactResource {
 			return Response.status(Response.Status.CONFLICT).build();
 		}
 		contactDao.save(contact);
-		URI uri = new URI(contact.getId()+"");
 		EntityTag etag = new EntityTag(contact.hashCode()+"");
-		return Response.created(uri).cacheControl(cc).tag(etag).build();
+		return Response.created(new URI(uriinfo.getAbsolutePath()+""+contact.getId())).cacheControl(cc).tag(etag).build();
 	}
 
 	/**
